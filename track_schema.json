@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Airborne Track Data Schema",
+  "description": "Schema for airborne track binary data structure",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Data format version"
+    },
+    "tracks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "track_id": {
+            "type": "integer",
+            "description": "Unique track identifier"
+          },
+          "track_name": {
+            "type": "string",
+            "description": "Human-readable track name"
+          },
+          "track_type": {
+            "type": "string",
+            "enum": ["incoming", "outgoing"],
+            "description": "Direction of the track"
+          },
+          "aircraft_type": {
+            "type": "string",
+            "description": "Type of aircraft"
+          },
+          "start_time": {
+            "type": "number",
+            "description": "Track start timestamp (Unix epoch)"
+          },
+          "end_time": {
+            "type": "number",
+            "description": "Track end timestamp (Unix epoch)"
+          },
+          "lifetime": {
+            "type": "number",
+            "description": "Track lifetime in seconds"
+          },
+          "positions": {
+            "type": "array",
+            "description": "Array of position data points",
+            "items": {
+              "type": "object",
+              "properties": {
+                "timestamp": {
+                  "type": "number",
+                  "description": "Position timestamp (Unix epoch)"
+                },
+                "latitude": {
+                  "type": "number",
+                  "description": "Latitude in degrees"
+                },
+                "longitude": {
+                  "type": "number",
+                  "description": "Longitude in degrees"
+                },
+                "altitude": {
+                  "type": "number",
+                  "description": "Altitude in feet"
+                },
+                "speed": {
+                  "type": "number",
+                  "description": "Ground speed in knots"
+                },
+                "heading": {
+                  "type": "number",
+                  "description": "Heading in degrees"
+                }
+              },
+              "required": ["timestamp", "latitude", "longitude", "altitude", "speed", "heading"]
+            }
+          }
+        },
+        "required": ["track_id", "track_name", "track_type", "aircraft_type", "start_time", "end_time", "lifetime", "positions"]
+      }
+    }
+  },
+  "required": ["version", "tracks"]
+}

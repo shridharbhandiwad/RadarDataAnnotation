@@ -49,105 +49,73 @@ class TrackViewerGUI:
                                 font=('Arial', 16, 'bold'))
         title_label.grid(row=0, column=0, columnspan=2, pady=10)
         
-        # Left panel - Controls with scrollbar
-        control_container = ttk.LabelFrame(main_frame, text="Controls", padding="5")
-        control_container.grid(row=1, column=0, rowspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 10))
-        
-        # Add canvas and scrollbar for scrollable control panel
-        canvas = tk.Canvas(control_container, width=300, highlightthickness=0)
-        control_scrollbar = ttk.Scrollbar(control_container, orient="vertical", command=canvas.yview)
-        control_frame = ttk.Frame(canvas, padding="5")
-        
-        canvas.configure(yscrollcommand=control_scrollbar.set)
-        
-        control_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        
-        canvas_frame = canvas.create_window((0, 0), window=control_frame, anchor=tk.NW)
-        
-        # Configure scroll region
-        def configure_scroll_region(event=None):
-            canvas.configure(scrollregion=canvas.bbox("all"))
-            # Update canvas window width to match canvas width
-            canvas.itemconfig(canvas_frame, width=canvas.winfo_width())
-        
-        control_frame.bind("<Configure>", configure_scroll_region)
-        canvas.bind("<Configure>", configure_scroll_region)
-        
-        # Mouse wheel scrolling
-        def on_mousewheel(event):
-            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
-        
-        canvas.bind_all("<MouseWheel>", on_mousewheel)  # Windows/Mac
-        canvas.bind_all("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))  # Linux scroll up
-        canvas.bind_all("<Button-5>", lambda e: canvas.yview_scroll(1, "units"))  # Linux scroll down
+        # Left panel - Controls (compact layout)
+        control_frame = ttk.LabelFrame(main_frame, text="Controls", padding="5")
+        control_frame.grid(row=1, column=0, rowspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 10))
         
         # File loading section
-        file_frame = ttk.LabelFrame(control_frame, text="Load Binary File", padding="10")
-        file_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=5)
+        file_frame = ttk.LabelFrame(control_frame, text="Load Binary File", padding="5")
+        file_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=3)
         
-        # Drop zone
-        self.drop_label = ttk.Label(file_frame, text="Drag & Drop Binary File Here\n\n📁\n\nor", 
-                                    relief=tk.RIDGE, padding=20, 
+        # Drop zone (compact)
+        self.drop_label = ttk.Label(file_frame, text="📁 Drag & Drop Here or", 
+                                    relief=tk.RIDGE, padding=10, 
                                     foreground='gray', anchor=tk.CENTER)
-        self.drop_label.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=5)
+        self.drop_label.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=3)
         
         # Browse button
         browse_btn = ttk.Button(file_frame, text="Browse File...", command=self._browse_file)
-        browse_btn.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=5)
+        browse_btn.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=3)
         
         # Current file display
         self.file_label = ttk.Label(file_frame, text="No file loaded", 
-                                    foreground='gray', wraplength=250)
-        self.file_label.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=5)
+                                    foreground='gray', wraplength=250, font=('Arial', 8))
+        self.file_label.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=3)
         
-        # Track list section
-        track_frame = ttk.LabelFrame(control_frame, text="Available Tracks", padding="10")
-        track_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=10)
-        track_frame.rowconfigure(0, weight=1)
+        # Track list section (compact)
+        track_frame = ttk.LabelFrame(control_frame, text="Available Tracks", padding="5")
+        track_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=3)
         
         # Track listbox with scrollbar
         list_frame = ttk.Frame(track_frame)
-        list_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        list_frame.grid(row=0, column=0, sticky=(tk.W, tk.E))
         list_frame.columnconfigure(0, weight=1)
-        list_frame.rowconfigure(0, weight=1)
         
         scrollbar = ttk.Scrollbar(list_frame)
         scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
         
-        self.track_listbox = tk.Listbox(list_frame, height=10, 
+        self.track_listbox = tk.Listbox(list_frame, height=5, 
                                         yscrollcommand=scrollbar.set,
-                                        font=('Courier', 9))
-        self.track_listbox.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+                                        font=('Courier', 8))
+        self.track_listbox.grid(row=0, column=0, sticky=(tk.W, tk.E))
         self.track_listbox.bind('<<ListboxSelect>>', self._on_track_select)
         scrollbar.config(command=self.track_listbox.yview)
         
-        # Track details section
-        details_frame = ttk.LabelFrame(control_frame, text="Track Details", padding="10")
-        details_frame.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=5)
+        # Track details section (compact)
+        details_frame = ttk.LabelFrame(control_frame, text="Track Details", padding="5")
+        details_frame.grid(row=2, column=0, sticky=(tk.W, tk.E), pady=3)
         
-        self.details_text = tk.Text(details_frame, height=12, width=35, 
-                                    wrap=tk.WORD, font=('Courier', 9))
+        self.details_text = tk.Text(details_frame, height=6, width=35, 
+                                    wrap=tk.WORD, font=('Courier', 8))
         self.details_text.grid(row=0, column=0, sticky=(tk.W, tk.E))
         self.details_text.config(state=tk.DISABLED)
         
-        # Export buttons
-        export_frame = ttk.LabelFrame(control_frame, text="Export", padding="10")
-        export_frame.grid(row=3, column=0, sticky=(tk.W, tk.E), pady=5)
+        # Export & AI buttons (combined for space)
+        actions_frame = ttk.LabelFrame(control_frame, text="Actions", padding="5")
+        actions_frame.grid(row=3, column=0, sticky=(tk.W, tk.E), pady=3)
         
-        ttk.Button(export_frame, text="Export to JSON", 
+        ttk.Button(actions_frame, text="Export JSON", 
                   command=self._export_json).grid(row=0, column=0, sticky=(tk.W, tk.E), pady=2)
-        ttk.Button(export_frame, text="Export to CSV", 
+        ttk.Button(actions_frame, text="Export CSV", 
                   command=self._export_csv).grid(row=1, column=0, sticky=(tk.W, tk.E), pady=2)
-        ttk.Button(export_frame, text="Export Summary", 
+        ttk.Button(actions_frame, text="Export Summary", 
                   command=self._export_summary).grid(row=2, column=0, sticky=(tk.W, tk.E), pady=2)
         
-        # AI Tag Generation section
-        ai_frame = ttk.LabelFrame(control_frame, text="AI Tag Generation", padding="10")
-        ai_frame.grid(row=4, column=0, sticky=(tk.W, tk.E), pady=5)
+        # AI Tag Generation button (in same section)
+        ttk.Separator(actions_frame, orient='horizontal').grid(row=3, column=0, sticky=(tk.W, tk.E), pady=5)
         
-        ttk.Button(ai_frame, text="🤖 Run AI Model generate Tags", 
-                  command=self._generate_ai_tags).grid(row=0, column=0, sticky=(tk.W, tk.E), pady=2)
+        ttk.Button(actions_frame, text="🤖 Generate AI Tags", 
+                  command=self._generate_ai_tags).grid(row=4, column=0, sticky=(tk.W, tk.E), pady=2)
         
         # Right panel - Visualization
         viz_frame = ttk.LabelFrame(main_frame, text="Track Visualization", padding="10")

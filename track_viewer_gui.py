@@ -13,6 +13,7 @@ import numpy as np
 from datetime import datetime
 from pathlib import Path
 from track_extractor import TrackExtractor
+from track_tag_generator import TrackTagGenerator
 
 
 class TrackViewerGUI:
@@ -24,8 +25,10 @@ class TrackViewerGUI:
         self.root.geometry("1400x900")
         
         self.extractor = TrackExtractor()
+        self.tag_generator = TrackTagGenerator()
         self.tracks = []
         self.selected_track_index = None
+        self.csv_file_path = None
         
         self._setup_ui()
         self._setup_drag_drop()
@@ -109,6 +112,14 @@ class TrackViewerGUI:
                   command=self._export_csv).grid(row=1, column=0, sticky=(tk.W, tk.E), pady=2)
         ttk.Button(export_frame, text="Export Summary", 
                   command=self._export_summary).grid(row=2, column=0, sticky=(tk.W, tk.E), pady=2)
+        
+        # AI Tag Generation section
+        ai_frame = ttk.LabelFrame(control_frame, text="AI Tag Generation", padding="10")
+        ai_frame.grid(row=4, column=0, sticky=(tk.W, tk.E), pady=5)
+        
+        ttk.Button(ai_frame, text="🤖 Run AI Model generate Tags", 
+                  command=self._generate_ai_tags,
+                  style='Accent.TButton').grid(row=0, column=0, sticky=(tk.W, tk.E), pady=2)
         
         # Right panel - Visualization
         viz_frame = ttk.LabelFrame(main_frame, text="Track Visualization", padding="10")
@@ -431,6 +442,7 @@ Last Position:
         
         if filename:
             self.extractor.export_to_csv(filename)
+            self.csv_file_path = filename
             messagebox.showinfo("Success", f"Exported to:\n{filename}")
     
     def _export_summary(self):
@@ -447,6 +459,56 @@ Last Position:
         if filename:
             self.extractor.export_summary(filename)
             messagebox.showinfo("Success", f"Exported to:\n{filename}")
+    
+    def _generate_ai_tags(self):
+        """Generate AI tags for tracks"""
+        if not self.tracks:
+            messagebox.showwarning("Warning", "No tracks loaded")
+            return
+        
+        # Check if CSV has been exported
+        if self.csv_file_path is None or not Path(self.csv_file_path).exists():
+            # Export to temporary CSV first
+            self.csv_file_path = 'airborne_tracks_extracted.csv'
+            self.extractor.export_to_csv(self.csv_file_path)
+        
+        try:
+            self.status_label.config(text="Generating AI tags... Please wait...")
+            self.root.update()
+            
+            # Generate tags
+            self.tag_generator.load_csv(self.csv_file_path)
+            self.tag_generator.generate_all_tags()
+            
+            # Save tagged CSV
+            from datetime import datetime
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            output_file = f'airborne_tracks_tagged_{timestamp}.csv'
+            self.tag_generator.save_tagged_csv(output_file)
+            
+            # Show statistics in a popup
+            tag_stats = self.tag_generator.get_tag_statistics()
+            
+            # Create summary message
+            summary = f"AI Tag Generation Complete!\n\n"
+            summary += f"Tagged file saved to:\n{output_file}\n\n"
+            summary += f"Total tracks analyzed: {self.tag_generator.df['track_id'].nunique()}\n"
+            summary += f"Total data points: {len(self.tag_generator.df)}\n"
+            summary += f"Unique tags generated: {len(tag_stats)}\n\n"
+            summary += "Top 5 most common tags:\n"
+            for tag, count in list(tag_stats.most_common(5)):
+                summary += f"  • {tag}: {count}\n"
+            
+            messagebox.showinfo("AI Tag Generation Complete", summary)
+            self.status_label.config(text=f"AI tags generated and saved to {output_file}")
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to generate AI tags:\n{str(e)}")
+            self.status_label.config(text="Error generating AI tags")
+    
+    def _set_csv_path(self, path):
+        """Set the CSV file path after export"""
+        self.csv_file_path = path
 
 
 def main():

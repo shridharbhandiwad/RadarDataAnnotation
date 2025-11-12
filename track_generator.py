@@ -53,19 +53,23 @@ class TrackGenerator:
         """Generate position data for incoming track"""
         positions = []
         num_points = 60  # One point per 30 seconds
-        start_lat, start_lon = 40.0, -75.0  # Starting position (east)
-        end_lat, end_lon = 39.8, -75.5  # Airport position
+        start_range = 150.0  # Starting range in nautical miles
+        end_range = 5.0  # Final range (close to radar)
+        start_azimuth = 90.0  # Starting azimuth (east)
+        end_azimuth = 270.0  # Final azimuth (west)
         
         for i in range(num_points):
             progress = i / (num_points - 1)
             timestamp = end_time - 1800 + (i * 30)
             
-            # Interpolate position
-            lat = start_lat + (end_lat - start_lat) * progress
-            lon = start_lon + (end_lon - start_lon) * progress
+            # Calculate range (approaching)
+            range_val = start_range + (end_range - start_range) * progress
             
-            # Calculate altitude (descending approach)
-            altitude = 35000 * (1 - progress) + 1000 * progress
+            # Calculate azimuth (sweeping from east to west)
+            azimuth = start_azimuth + (end_azimuth - start_azimuth) * progress
+            
+            # Calculate elevation (descending approach)
+            elevation = 35000 * (1 - progress) + 1000 * progress
             
             # Calculate speed (decelerating)
             speed = 450 * (1 - progress * 0.5)  # From 450 to 225 knots
@@ -75,9 +79,9 @@ class TrackGenerator:
             
             positions.append({
                 'timestamp': timestamp,
-                'latitude': lat,
-                'longitude': lon,
-                'altitude': altitude,
+                'range': range_val,
+                'azimuth': azimuth,
+                'elevation': elevation,
                 'speed': speed,
                 'heading': heading
             })
@@ -88,19 +92,23 @@ class TrackGenerator:
         """Generate position data for outgoing track"""
         positions = []
         num_points = 80  # One point per 30 seconds
-        start_lat, start_lon = 39.8, -75.5  # Airport position
-        end_lat, end_lon = 39.6, -76.5  # Destination (west)
+        start_range = 3.0  # Starting range (near radar)
+        end_range = 180.0  # Final range in nautical miles
+        start_azimuth = 240.0  # Starting azimuth (southwest)
+        end_azimuth = 320.0  # Final azimuth (northwest)
         
         for i in range(num_points):
             progress = i / (num_points - 1)
             timestamp = end_time - 2400 + (i * 30)
             
-            # Interpolate position
-            lat = start_lat + (end_lat - start_lat) * progress
-            lon = start_lon + (end_lon - start_lon) * progress
+            # Calculate range (departing)
+            range_val = start_range + (end_range - start_range) * progress
             
-            # Calculate altitude (climbing departure)
-            altitude = 1000 + 34000 * progress
+            # Calculate azimuth (sweeping from southwest to northwest)
+            azimuth = start_azimuth + (end_azimuth - start_azimuth) * progress
+            
+            # Calculate elevation (climbing departure)
+            elevation = 1000 + 34000 * progress
             
             # Calculate speed (accelerating)
             speed = 150 + 350 * progress  # From 150 to 500 knots
@@ -110,9 +118,9 @@ class TrackGenerator:
             
             positions.append({
                 'timestamp': timestamp,
-                'latitude': lat,
-                'longitude': lon,
-                'altitude': altitude,
+                'range': range_val,
+                'azimuth': azimuth,
+                'elevation': elevation,
                 'speed': speed,
                 'heading': heading
             })
@@ -140,9 +148,9 @@ class TrackGenerator:
             - num_positions (4 bytes): uint32
             - For each position:
                 - timestamp (8 bytes): double
-                - latitude (8 bytes): double
-                - longitude (8 bytes): double
-                - altitude (8 bytes): double
+                - range (8 bytes): double
+                - azimuth (8 bytes): double
+                - elevation (8 bytes): double
                 - speed (8 bytes): double
                 - heading (8 bytes): double
         """
@@ -181,9 +189,9 @@ class TrackGenerator:
                 f.write(struct.pack('I', len(track['positions'])))
                 for pos in track['positions']:
                     f.write(struct.pack('d', pos['timestamp']))
-                    f.write(struct.pack('d', pos['latitude']))
-                    f.write(struct.pack('d', pos['longitude']))
-                    f.write(struct.pack('d', pos['altitude']))
+                    f.write(struct.pack('d', pos['range']))
+                    f.write(struct.pack('d', pos['azimuth']))
+                    f.write(struct.pack('d', pos['elevation']))
                     f.write(struct.pack('d', pos['speed']))
                     f.write(struct.pack('d', pos['heading']))
         

@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 import matplotlib.patches as mpatches
+import numpy as np
 from datetime import datetime
 from pathlib import Path
 from track_extractor import TrackExtractor
@@ -221,15 +222,15 @@ Lifetime: {track['lifetime']/60:.1f} minutes
 Data Points: {len(track['positions'])}
 
 First Position:
-  Lat: {track['positions'][0]['latitude']:.4f}°
-  Lon: {track['positions'][0]['longitude']:.4f}°
-  Alt: {track['positions'][0]['altitude']:.0f} ft
+  Range: {track['positions'][0]['range']:.2f} NM
+  Azimuth: {track['positions'][0]['azimuth']:.1f}°
+  Elev: {track['positions'][0]['elevation']:.0f} ft
   Speed: {track['positions'][0]['speed']:.0f} kts
 
 Last Position:
-  Lat: {track['positions'][-1]['latitude']:.4f}°
-  Lon: {track['positions'][-1]['longitude']:.4f}°
-  Alt: {track['positions'][-1]['altitude']:.0f} ft
+  Range: {track['positions'][-1]['range']:.2f} NM
+  Azimuth: {track['positions'][-1]['azimuth']:.1f}°
+  Elev: {track['positions'][-1]['elevation']:.0f} ft
   Speed: {track['positions'][-1]['speed']:.0f} kts
 """
         
@@ -244,11 +245,32 @@ Last Position:
         self.ax.text(0.5, 0.5, 'Load a binary file to view tracks', 
                     ha='center', va='center', fontsize=14, color='gray',
                     transform=self.ax.transAxes)
-        self.ax.set_xlabel('Longitude')
-        self.ax.set_ylabel('Latitude')
-        self.ax.set_title('Airborne Track Trajectories')
+        self.ax.set_xlabel('X Position (NM East)')
+        self.ax.set_ylabel('Y Position (NM North)')
+        self.ax.set_title('Airborne Track Trajectories (Polar View)')
         self.ax.grid(True, alpha=0.3)
+        self.ax.set_aspect('equal')
         self.canvas.draw()
+    
+    def _polar_to_cartesian(self, range_val, azimuth):
+        """Convert range/azimuth to Cartesian coordinates
+        
+        Args:
+            range_val: Range in nautical miles
+            azimuth: Azimuth in degrees (0=North, 90=East, 180=South, 270=West)
+        
+        Returns:
+            tuple: (x, y) in nautical miles where x is East, y is North
+        """
+        # Convert azimuth from degrees to radians
+        # Azimuth is measured clockwise from North, but we need mathematical angle
+        # (counterclockwise from East)
+        angle_rad = np.radians(90 - azimuth)
+        
+        x = range_val * np.cos(angle_rad)
+        y = range_val * np.sin(angle_rad)
+        
+        return x, y
     
     def _draw_all_tracks(self):
         """Draw all tracks on the plot"""
@@ -261,23 +283,33 @@ Last Position:
         colors = {'incoming': '#2E86AB', 'outgoing': '#A23B72'}
         
         for track in self.tracks:
-            lats = [pos['latitude'] for pos in track['positions']]
-            lons = [pos['longitude'] for pos in track['positions']]
+            # Convert polar to Cartesian coordinates
+            xs = []
+            ys = []
+            for pos in track['positions']:
+                x, y = self._polar_to_cartesian(pos['range'], pos['azimuth'])
+                xs.append(x)
+                ys.append(y)
+            
             color = colors.get(track['track_type'], 'gray')
             
-            self.ax.plot(lons, lats, color=color, alpha=0.5, linewidth=2, 
+            self.ax.plot(xs, ys, color=color, alpha=0.5, linewidth=2, 
                         label=track['track_name'])
             
             # Mark start and end
-            self.ax.plot(lons[0], lats[0], 'o', color=color, markersize=8, 
+            self.ax.plot(xs[0], ys[0], 'o', color=color, markersize=8, 
                         markeredgecolor='white', markeredgewidth=1.5)
-            self.ax.plot(lons[-1], lats[-1], 's', color=color, markersize=8,
+            self.ax.plot(xs[-1], ys[-1], 's', color=color, markersize=8,
                         markeredgecolor='white', markeredgewidth=1.5)
         
-        self.ax.set_xlabel('Longitude (degrees)', fontsize=11)
-        self.ax.set_ylabel('Latitude (degrees)', fontsize=11)
-        self.ax.set_title('All Airborne Track Trajectories', fontsize=13, fontweight='bold')
+        # Add radar origin marker
+        self.ax.plot(0, 0, 'x', color='red', markersize=12, markeredgewidth=3, label='Radar Origin')
+        
+        self.ax.set_xlabel('X Position (NM East)', fontsize=11)
+        self.ax.set_ylabel('Y Position (NM North)', fontsize=11)
+        self.ax.set_title('All Airborne Track Trajectories (Polar View)', fontsize=13, fontweight='bold')
         self.ax.grid(True, alpha=0.3, linestyle='--')
+        self.ax.set_aspect('equal')
         self.ax.legend(loc='best', fontsize=9)
         
         # Add custom legend for markers
@@ -300,55 +332,73 @@ Last Position:
         
         # Draw all tracks in light gray
         for i, track in enumerate(self.tracks):
-            lats = [pos['latitude'] for pos in track['positions']]
-            lons = [pos['longitude'] for pos in track['positions']]
+            xs = []
+            ys = []
+            for pos in track['positions']:
+                x, y = self._polar_to_cartesian(pos['range'], pos['azimuth'])
+                xs.append(x)
+                ys.append(y)
             
             if i == self.selected_track_index:
                 continue
             
-            self.ax.plot(lons, lats, color='lightgray', alpha=0.3, linewidth=1.5)
-            self.ax.plot(lons[0], lats[0], 'o', color='lightgray', markersize=6, alpha=0.5)
-            self.ax.plot(lons[-1], lats[-1], 's', color='lightgray', markersize=6, alpha=0.5)
+            self.ax.plot(xs, ys, color='lightgray', alpha=0.3, linewidth=1.5)
+            self.ax.plot(xs[0], ys[0], 'o', color='lightgray', markersize=6, alpha=0.5)
+            self.ax.plot(xs[-1], ys[-1], 's', color='lightgray', markersize=6, alpha=0.5)
         
         # Draw selected track highlighted
-        sel_lats = [pos['latitude'] for pos in selected_track['positions']]
-        sel_lons = [pos['longitude'] for pos in selected_track['positions']]
-        sel_alts = [pos['altitude'] for pos in selected_track['positions']]
+        sel_xs = []
+        sel_ys = []
+        sel_elevs = []
+        for pos in selected_track['positions']:
+            x, y = self._polar_to_cartesian(pos['range'], pos['azimuth'])
+            sel_xs.append(x)
+            sel_ys.append(y)
+            sel_elevs.append(pos['elevation'])
+        
         sel_color = colors.get(selected_track['track_type'], 'red')
         
-        # Draw track with color gradient based on altitude
-        for i in range(len(sel_lons) - 1):
-            self.ax.plot(sel_lons[i:i+2], sel_lats[i:i+2], 
+        # Draw track with color gradient based on elevation
+        for i in range(len(sel_xs) - 1):
+            self.ax.plot(sel_xs[i:i+2], sel_ys[i:i+2], 
                         color=sel_color, linewidth=3, alpha=0.8)
         
         # Mark waypoints every 10 points
-        for i in range(0, len(sel_lons), 10):
-            self.ax.plot(sel_lons[i], sel_lats[i], 'o', color=sel_color, 
+        for i in range(0, len(sel_xs), 10):
+            self.ax.plot(sel_xs[i], sel_ys[i], 'o', color=sel_color, 
                         markersize=4, alpha=0.6)
         
         # Highlight start and end
-        self.ax.plot(sel_lons[0], sel_lats[0], 'o', color='green', markersize=12, 
+        self.ax.plot(sel_xs[0], sel_ys[0], 'o', color='green', markersize=12, 
                     markeredgecolor='white', markeredgewidth=2, label='Start', zorder=10)
-        self.ax.plot(sel_lons[-1], sel_lats[-1], 's', color='red', markersize=12,
+        self.ax.plot(sel_xs[-1], sel_ys[-1], 's', color='red', markersize=12,
                     markeredgecolor='white', markeredgewidth=2, label='End', zorder=10)
         
         # Add direction arrows
-        arrow_interval = max(1, len(sel_lons) // 5)
-        for i in range(arrow_interval, len(sel_lons) - 1, arrow_interval):
-            dx = sel_lons[i+1] - sel_lons[i]
-            dy = sel_lats[i+1] - sel_lats[i]
-            self.ax.arrow(sel_lons[i], sel_lats[i], dx*0.3, dy*0.3,
-                         head_width=0.02, head_length=0.02, fc=sel_color, 
-                         ec=sel_color, alpha=0.7)
+        arrow_interval = max(1, len(sel_xs) // 5)
+        for i in range(arrow_interval, len(sel_xs) - 1, arrow_interval):
+            dx = sel_xs[i+1] - sel_xs[i]
+            dy = sel_ys[i+1] - sel_ys[i]
+            # Normalize arrow length
+            arrow_length = np.sqrt(dx**2 + dy**2)
+            if arrow_length > 0:
+                scale = 5.0 / arrow_length  # Fixed arrow length of 5 NM
+                self.ax.arrow(sel_xs[i], sel_ys[i], dx*scale*0.3, dy*scale*0.3,
+                             head_width=2, head_length=2, fc=sel_color, 
+                             ec=sel_color, alpha=0.7)
         
-        self.ax.set_xlabel('Longitude (degrees)', fontsize=11)
-        self.ax.set_ylabel('Latitude (degrees)', fontsize=11)
+        # Add radar origin marker
+        self.ax.plot(0, 0, 'x', color='red', markersize=12, markeredgewidth=3, label='Radar Origin')
+        
+        self.ax.set_xlabel('X Position (NM East)', fontsize=11)
+        self.ax.set_ylabel('Y Position (NM North)', fontsize=11)
         
         track_type_text = "INCOMING" if selected_track['track_type'] == 'incoming' else "OUTGOING"
         self.ax.set_title(f"Selected Track: {selected_track['track_name']} ({track_type_text})", 
                          fontsize=13, fontweight='bold')
         
         self.ax.grid(True, alpha=0.3, linestyle='--')
+        self.ax.set_aspect('equal')
         self.ax.legend(loc='best', fontsize=10)
         
         self.canvas.draw()

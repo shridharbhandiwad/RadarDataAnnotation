@@ -49,9 +49,38 @@ class TrackViewerGUI:
                                 font=('Arial', 16, 'bold'))
         title_label.grid(row=0, column=0, columnspan=2, pady=10)
         
-        # Left panel - Controls
-        control_frame = ttk.LabelFrame(main_frame, text="Controls", padding="10")
-        control_frame.grid(row=1, column=0, rowspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 10))
+        # Left panel - Controls with scrollbar
+        control_container = ttk.LabelFrame(main_frame, text="Controls", padding="5")
+        control_container.grid(row=1, column=0, rowspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 10))
+        
+        # Add canvas and scrollbar for scrollable control panel
+        canvas = tk.Canvas(control_container, width=300, highlightthickness=0)
+        control_scrollbar = ttk.Scrollbar(control_container, orient="vertical", command=canvas.yview)
+        control_frame = ttk.Frame(canvas, padding="5")
+        
+        canvas.configure(yscrollcommand=control_scrollbar.set)
+        
+        control_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        canvas_frame = canvas.create_window((0, 0), window=control_frame, anchor=tk.NW)
+        
+        # Configure scroll region
+        def configure_scroll_region(event=None):
+            canvas.configure(scrollregion=canvas.bbox("all"))
+            # Update canvas window width to match canvas width
+            canvas.itemconfig(canvas_frame, width=canvas.winfo_width())
+        
+        control_frame.bind("<Configure>", configure_scroll_region)
+        canvas.bind("<Configure>", configure_scroll_region)
+        
+        # Mouse wheel scrolling
+        def on_mousewheel(event):
+            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        
+        canvas.bind_all("<MouseWheel>", on_mousewheel)  # Windows/Mac
+        canvas.bind_all("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))  # Linux scroll up
+        canvas.bind_all("<Button-5>", lambda e: canvas.yview_scroll(1, "units"))  # Linux scroll down
         
         # File loading section
         file_frame = ttk.LabelFrame(control_frame, text="Load Binary File", padding="10")

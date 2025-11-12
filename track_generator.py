@@ -195,25 +195,66 @@ class TrackGenerator:
                     f.write(struct.pack('d', pos['speed']))
                     f.write(struct.pack('d', pos['heading']))
         
-        print(f"Binary file saved to: {filename}")
-        print(f"Number of tracks: {len(self.tracks)}")
-        for track in self.tracks:
-            print(f"  - {track['track_name']} ({track['track_type']}): {len(track['positions'])} positions")
+        import sys
+        print(f"✓ Binary file saved to: {filename}")
+        print(f"  File size: {self._get_file_size(filename)}")
+        print(f"  Number of tracks: {len(self.tracks)}")
+        sys.stdout.flush()
+    
+    def _get_file_size(self, filename):
+        """Get human-readable file size"""
+        import os
+        size = os.path.getsize(filename)
+        for unit in ['B', 'KB', 'MB', 'GB']:
+            if size < 1024.0:
+                return f"{size:.2f} {unit}"
+            size /= 1024.0
+        return f"{size:.2f} TB"
 
 
 def main():
     """Generate sample binary file"""
+    import sys
+    
+    print("="*80)
+    print("AIRBORNE TRACK GENERATOR")
+    print("="*80)
+    print("\n[1/3] Generating sample tracks...")
+    sys.stdout.flush()
+    
     generator = TrackGenerator()
-    generator.generate_sample_tracks()
+    tracks = generator.generate_sample_tracks()
+    print(f"✓ Generated {len(tracks)} tracks successfully")
+    for track in tracks:
+        print(f"  - {track['track_name']} ({track['track_type']}): {len(track['positions'])} positions")
+    sys.stdout.flush()
+    
+    print("\n[2/3] Saving binary file...")
+    sys.stdout.flush()
     generator.save_to_binary('airborne_tracks.bin')
+    sys.stdout.flush()
     
     # Also save as JSON for reference
+    print("\n[3/3] Saving JSON reference...")
+    sys.stdout.flush()
     with open('airborne_tracks_reference.json', 'w') as f:
         json.dump({
             'version': '1.0',
             'tracks': generator.tracks
         }, f, indent=2)
-    print("\nReference JSON saved to: airborne_tracks_reference.json")
+    print("✓ Reference JSON saved to: airborne_tracks_reference.json")
+    
+    print("\n" + "="*80)
+    print("✓ GENERATION COMPLETE!")
+    print("="*80)
+    print("\nGenerated files:")
+    print("  1. airborne_tracks.bin - Binary track data")
+    print("  2. airborne_tracks_reference.json - JSON reference")
+    print("\nNext steps:")
+    print("  - Run 'python3 track_extractor.py' to extract data")
+    print("  - Run 'python3 track_viewer_gui.py' to view in GUI")
+    print("="*80 + "\n")
+    sys.stdout.flush()
 
 
 if __name__ == '__main__':

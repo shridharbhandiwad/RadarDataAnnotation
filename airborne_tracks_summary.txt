@@ -12,22 +12,24 @@ ID:           1001
 Name:         INC-ALPHA-001
 Type:         INCOMING
 Aircraft:     Boeing 737
-Start Time:   2025-11-10 15:03:49
-End Time:     2025-11-10 15:33:49
+Start Time:   2025-11-12 13:14:37
+End Time:     2025-11-12 13:44:37
 Lifetime:     30.0 minutes (1800 seconds)
 Data Points:  60
 
 First Position:
-  Time:      2025-11-10 15:03:49
-  Location:  40.0000°N, -75.0000°E
-  Altitude:  35000 ft
+  Time:      2025-11-12 13:14:37
+  Range:     150.00 NM
+  Azimuth:   90.0°
+  Elevation: 35000 ft
   Speed:     450 knots
   Heading:   270.0°
 
 Last Position:
-  Time:      2025-11-10 15:33:19
-  Location:  39.8000°N, -75.5000°E
-  Altitude:  1000 ft
+  Time:      2025-11-12 13:44:07
+  Range:     5.00 NM
+  Azimuth:   270.0°
+  Elevation: 1000 ft
   Speed:     225 knots
   Heading:   270.0°
 
@@ -38,22 +40,24 @@ ID:           2001
 Name:         OUT-BRAVO-002
 Type:         OUTGOING
 Aircraft:     Airbus A320
-Start Time:   2025-11-10 14:53:49
-End Time:     2025-11-10 15:33:49
+Start Time:   2025-11-12 13:04:37
+End Time:     2025-11-12 13:44:37
 Lifetime:     40.0 minutes (2400 seconds)
 Data Points:  80
 
 First Position:
-  Time:      2025-11-10 14:53:49
-  Location:  39.8000°N, -75.5000°E
-  Altitude:  1000 ft
+  Time:      2025-11-12 13:04:37
+  Range:     3.00 NM
+  Azimuth:   240.0°
+  Elevation: 1000 ft
   Speed:     150 knots
   Heading:   250.0°
 
 Last Position:
-  Time:      2025-11-10 15:33:19
-  Location:  39.6000°N, -76.5000°E
-  Altitude:  35000 ft
+  Time:      2025-11-12 13:44:07
+  Range:     180.00 NM
+  Azimuth:   320.0°
+  Elevation: 35000 ft
   Speed:     500 knots
   Heading:   250.0°
 

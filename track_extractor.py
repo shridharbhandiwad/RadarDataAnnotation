@@ -79,9 +79,9 @@ class TrackExtractor:
         for _ in range(num_positions):
             position = {
                 'timestamp': struct.unpack('d', f.read(8))[0],
-                'latitude': struct.unpack('d', f.read(8))[0],
-                'longitude': struct.unpack('d', f.read(8))[0],
-                'altitude': struct.unpack('d', f.read(8))[0],
+                'range': struct.unpack('d', f.read(8))[0],
+                'azimuth': struct.unpack('d', f.read(8))[0],
+                'elevation': struct.unpack('d', f.read(8))[0],
                 'speed': struct.unpack('d', f.read(8))[0],
                 'heading': struct.unpack('d', f.read(8))[0]
             }
@@ -117,7 +117,7 @@ class TrackExtractor:
             fieldnames = [
                 'track_id', 'track_name', 'track_type', 'aircraft_type',
                 'track_start_time', 'track_end_time', 'lifetime',
-                'timestamp', 'latitude', 'longitude', 'altitude', 'speed', 'heading'
+                'timestamp', 'range', 'azimuth', 'elevation', 'speed', 'heading'
             ]
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
@@ -133,9 +133,9 @@ class TrackExtractor:
                         'track_end_time': datetime.fromtimestamp(track['end_time']).isoformat(),
                         'lifetime': track['lifetime'],
                         'timestamp': datetime.fromtimestamp(pos['timestamp']).isoformat(),
-                        'latitude': pos['latitude'],
-                        'longitude': pos['longitude'],
-                        'altitude': pos['altitude'],
+                        'range': pos['range'],
+                        'azimuth': pos['azimuth'],
+                        'elevation': pos['elevation'],
                         'speed': pos['speed'],
                         'heading': pos['heading']
                     }
@@ -172,15 +172,17 @@ class TrackExtractor:
                     
                     f.write("First Position:\n")
                     f.write(f"  Time:      {datetime.fromtimestamp(first_pos['timestamp']).strftime('%Y-%m-%d %H:%M:%S')}\n")
-                    f.write(f"  Location:  {first_pos['latitude']:.4f}°N, {first_pos['longitude']:.4f}°E\n")
-                    f.write(f"  Altitude:  {first_pos['altitude']:.0f} ft\n")
+                    f.write(f"  Range:     {first_pos['range']:.2f} NM\n")
+                    f.write(f"  Azimuth:   {first_pos['azimuth']:.1f}°\n")
+                    f.write(f"  Elevation: {first_pos['elevation']:.0f} ft\n")
                     f.write(f"  Speed:     {first_pos['speed']:.0f} knots\n")
                     f.write(f"  Heading:   {first_pos['heading']:.1f}°\n\n")
                     
                     f.write("Last Position:\n")
                     f.write(f"  Time:      {datetime.fromtimestamp(last_pos['timestamp']).strftime('%Y-%m-%d %H:%M:%S')}\n")
-                    f.write(f"  Location:  {last_pos['latitude']:.4f}°N, {last_pos['longitude']:.4f}°E\n")
-                    f.write(f"  Altitude:  {last_pos['altitude']:.0f} ft\n")
+                    f.write(f"  Range:     {last_pos['range']:.2f} NM\n")
+                    f.write(f"  Azimuth:   {last_pos['azimuth']:.1f}°\n")
+                    f.write(f"  Elevation: {last_pos['elevation']:.0f} ft\n")
                     f.write(f"  Speed:     {last_pos['speed']:.0f} knots\n")
                     f.write(f"  Heading:   {last_pos['heading']:.1f}°\n\n")
         

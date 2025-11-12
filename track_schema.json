@@ -52,17 +52,17 @@
                   "type": "number",
                   "description": "Position timestamp (Unix epoch)"
                 },
-                "latitude": {
+                "range": {
                   "type": "number",
-                  "description": "Latitude in degrees"
+                  "description": "Range in nautical miles"
                 },
-                "longitude": {
+                "azimuth": {
                   "type": "number",
-                  "description": "Longitude in degrees"
+                  "description": "Azimuth in degrees (0-360)"
                 },
-                "altitude": {
+                "elevation": {
                   "type": "number",
-                  "description": "Altitude in feet"
+                  "description": "Elevation in feet"
                 },
                 "speed": {
                   "type": "number",
@@ -73,7 +73,7 @@
                   "description": "Heading in degrees"
                 }
               },
-              "required": ["timestamp", "latitude", "longitude", "altitude", "speed", "heading"]
+              "required": ["timestamp", "range", "azimuth", "elevation", "speed", "heading"]
             }
           }
         },

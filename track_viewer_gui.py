@@ -118,8 +118,7 @@ class TrackViewerGUI:
         ai_frame.grid(row=4, column=0, sticky=(tk.W, tk.E), pady=5)
         
         ttk.Button(ai_frame, text="🤖 Run AI Model generate Tags", 
-                  command=self._generate_ai_tags,
-                  style='Accent.TButton').grid(row=0, column=0, sticky=(tk.W, tk.E), pady=2)
+                  command=self._generate_ai_tags).grid(row=0, column=0, sticky=(tk.W, tk.E), pady=2)
         
         # Right panel - Visualization
         viz_frame = ttk.LabelFrame(main_frame, text="Track Visualization", padding="10")

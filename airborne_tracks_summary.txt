@@ -3,61 +3,145 @@ AIRBORNE TRACK DATA SUMMARY
 ================================================================================
 
 Format Version: 1
-Total Tracks: 2
+Total Tracks: 5
 
 --------------------------------------------------------------------------------
 Track #1
 --------------------------------------------------------------------------------
 ID:           1001
-Name:         INC-ALPHA-001
+Name:         FIGHTER-RAPTOR-001
 Type:         INCOMING
-Aircraft:     Boeing 737
-Start Time:   2025-11-12 13:14:37
-End Time:     2025-11-12 13:44:37
-Lifetime:     30.0 minutes (1800 seconds)
-Data Points:  60
+Aircraft:     F-16
+Start Time:   2025-11-12 13:59:30
+End Time:     2025-11-12 14:49:30
+Lifetime:     50.0 minutes (3000 seconds)
+Data Points:  100
 
 First Position:
-  Time:      2025-11-12 13:14:37
-  Range:     150.00 NM
-  Azimuth:   90.0°
-  Elevation: 35000 ft
-  Speed:     450 knots
-  Heading:   270.0°
+  Time:      2025-11-12 13:59:30
+  Range:     80.00 NM
+  Azimuth:   45.0°
+  Elevation: 40000 ft
+  Speed:     550 knots
+  Heading:   180.0°
 
 Last Position:
-  Time:      2025-11-12 13:44:07
-  Range:     5.00 NM
-  Azimuth:   270.0°
-  Elevation: 1000 ft
-  Speed:     225 knots
-  Heading:   270.0°
+  Time:      2025-11-12 14:49:00
+  Range:     80.00 NM
+  Azimuth:   45.0°
+  Elevation: 40000 ft
+  Speed:     550 knots
+  Heading:   180.0°
 
 --------------------------------------------------------------------------------
 Track #2
 --------------------------------------------------------------------------------
-ID:           2001
-Name:         OUT-BRAVO-002
+ID:           1002
+Name:         COMM-DELTA-452
+Type:         INCOMING
+Aircraft:     Boeing 777
+Start Time:   2025-11-12 14:04:30
+End Time:     2025-11-12 14:49:30
+Lifetime:     45.0 minutes (2700 seconds)
+Data Points:  90
+
+First Position:
+  Time:      2025-11-12 14:04:30
+  Range:     150.00 NM
+  Azimuth:   90.0°
+  Elevation: 36000 ft
+  Speed:     450 knots
+  Heading:   270.0°
+
+Last Position:
+  Time:      2025-11-12 14:49:00
+  Range:     5.00 NM
+  Azimuth:   85.0°
+  Elevation: 36000 ft
+  Speed:     450 knots
+  Heading:   270.0°
+
+--------------------------------------------------------------------------------
+Track #3
+--------------------------------------------------------------------------------
+ID:           1003
+Name:         GA-CESSNA-N12345
 Type:         OUTGOING
-Aircraft:     Airbus A320
-Start Time:   2025-11-12 13:04:37
-End Time:     2025-11-12 13:44:37
+Aircraft:     Cessna 172
+Start Time:   2025-11-12 14:09:30
+End Time:     2025-11-12 14:49:30
 Lifetime:     40.0 minutes (2400 seconds)
 Data Points:  80
 
 First Position:
-  Time:      2025-11-12 13:04:37
-  Range:     3.00 NM
-  Azimuth:   240.0°
-  Elevation: 1000 ft
-  Speed:     150 knots
-  Heading:   250.0°
+  Time:      2025-11-12 14:09:30
+  Range:     20.00 NM
+  Azimuth:   180.0°
+  Elevation: 8000 ft
+  Speed:     110 knots
+  Heading:   90.0°
 
 Last Position:
-  Time:      2025-11-12 13:44:07
+  Time:      2025-11-12 14:49:00
+  Range:     20.00 NM
+  Azimuth:   180.0°
+  Elevation: 8000 ft
+  Speed:     110 knots
+  Heading:   90.0°
+
+--------------------------------------------------------------------------------
+Track #4
+--------------------------------------------------------------------------------
+ID:           1004
+Name:         BOMBER-BUFF-52
+Type:         OUTGOING
+Aircraft:     B-52
+Start Time:   2025-11-12 13:49:30
+End Time:     2025-11-12 14:49:30
+Lifetime:     60.0 minutes (3600 seconds)
+Data Points:  120
+
+First Position:
+  Time:      2025-11-12 13:49:30
+  Range:     10.00 NM
+  Azimuth:   270.0°
+  Elevation: 5000 ft
+  Speed:     380 knots
+  Heading:   315.0°
+
+Last Position:
+  Time:      2025-11-12 14:49:00
   Range:     180.00 NM
-  Azimuth:   320.0°
-  Elevation: 35000 ft
-  Speed:     500 knots
+  Azimuth:   270.0°
+  Elevation: 45000 ft
+  Speed:     460 knots
+  Heading:   315.0°
+
+--------------------------------------------------------------------------------
+Track #5
+--------------------------------------------------------------------------------
+ID:           1005
+Name:         CARGO-JUMBO-747F
+Type:         INCOMING
+Aircraft:     Boeing 747
+Start Time:   2025-11-12 13:59:30
+End Time:     2025-11-12 14:49:30
+Lifetime:     50.0 minutes (3000 seconds)
+Data Points:  100
+
+First Position:
+  Time:      2025-11-12 13:59:30
+  Range:     100.00 NM
+  Azimuth:   45.0°
+  Elevation: 38000 ft
+  Speed:     300 knots
+  Heading:   270.0°
+
+Last Position:
+  Time:      2025-11-12 14:49:00
+  Range:     20.00 NM
+  Azimuth:   135.0°
+  Elevation: 6000 ft
+  Speed:     300 knots
   Heading:   250.0°
 
